@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ESP32 Sıcaklık (WebSocket)</title>
+</head>
+<body>
+  <h1>Sıcaklık: <span id="temp">--</span> °C</h1>
+  <script>
+    const socket = new WebSocket(`ws://${location.host}/ws`);
+
+    socket.onmessage = function(event) {
+      document.getElementById("temp").textContent = event.data;
+    };
+
+    socket.onopen = () => console.log("WebSocket açık");
+    socket.onclose = () => console.log("WebSocket kapandı");
+  </script>
+</body>
+</html>

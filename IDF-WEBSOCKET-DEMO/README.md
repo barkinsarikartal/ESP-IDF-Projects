@@ -1,0 +1,2 @@
+# Do not forget to set Flash Size to 2MB and Partition Table to Custom partition table CSV from menuconfig.
+# Also in order to enable websocket applications, you need to enable WebSocket server support setting under Component config HTTP Server from menuconfig.
