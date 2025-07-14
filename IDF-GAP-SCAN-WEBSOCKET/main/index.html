@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bluetooth Cihaz Listesi</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h2 { color: #333; }
+    ul { list-style-type: none; padding: 0; }
+    li {
+      padding: 8px;
+      margin: 5px 0;
+      background-color: #f0f0f0;
+      border-radius: 6px;
+    }
+    .mac { font-weight: bold; }
+    .rssi { color: #888; }
+  </style>
+</head>
+<body>
+  <h2>Bluetooth Cihazları</h2>
+  <ul id="deviceList"></ul>
+
+  <script>
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+
+    ws.onopen = () => {
+      console.log("WebSocket bağlantısı kuruldu.");
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const json = JSON.parse(event.data);
+        if (!json.devices || !Array.isArray(json.devices)) return;
+
+        const list = document.getElementById("deviceList");
+        list.innerHTML = ""; // Mevcut listeyi temizle
+
+        json.devices.forEach(device => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <div class="mac">MAC: ${device.mac}</div>
+            <div>Ad: ${device.name}</div>
+            <div class="rssi">RSSI: ${device.rssi}</div>
+          `;
+          list.appendChild(li);
+        });
+      } catch (e) {
+        console.error("Geçersiz JSON:", e);
+      }
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket hatası:", err);
+    };
+  </script>
+</body>
+</html>
