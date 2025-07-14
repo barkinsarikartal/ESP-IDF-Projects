@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 IoT Kontrol Paneli</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #666; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h3 { color: #888; }
+        .section { margin: 30px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #0056b3; }
+        .button.danger { background: #dc3545; }
+        .button.danger:hover { background: #c82333; }
+        .button.success { background: #28a745; }
+        .button.success:hover { background: #218838; }
+        .input-group { margin: 10px 0; }
+        .input-group label { display: inline-block; width: 120px; font-weight: bold; }
+        .input-group input, .input-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .status.online { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.offline { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-card { background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff; }
+        .sensor-data { font-family: monospace; background: #e9ecef; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .log-area { background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 4px; font-family: monospace; height: 200px; overflow-y: scroll; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table th, table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        table th { background-color: #f8f9fa; font-weight: bold; }
+        .slider { width: 100%; }
+        .checkbox-group { margin: 10px 0; }
+        .checkbox-group input[type="checkbox"] { margin-right: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 ESP32 IoT Kontrol Paneli</h1>
+        <h1>GZIP için: /index.html.gz</h1>
+        
+        <div class="status online">
+            <strong>Sistem Durumu:</strong> Online - Son güncelleme: <span id="last-update">Yükleniyor...</span>
+        </div>
+
+        <!-- Sistem Bilgileri -->
+        <div class="section">
+            <h2>📊 Sistem Bilgileri</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Donanım</h3>
+                    <p><strong>Chip Model:</strong> ESP32-WROOM-32</p>
+                    <p><strong>CPU Frekansı:</strong> 240 MHz</p>
+                    <p><strong>Flash Boyutu:</strong> 4 MB</p>
+                    <p><strong>SRAM:</strong> 520 KB</p>
+                </div>
+                <div class="info-card">
+                    <h3>Firmware</h3>
+                    <p><strong>ESP-IDF Versiyon:</strong> v5.1.2</p>
+                    <p><strong>Uygulama Versiyon:</strong> 1.2.3</p>
+                    <p><strong>Derleme Tarihi:</strong> 20 Haziran 2025</p>
+                    <p><strong>Derleme Saati:</strong> 14:30:25</p>
+                </div>
+                <div class="info-card">
+                    <h3>Çalışma Süresi</h3>
+                    <p><strong>Uptime:</strong> <span id="uptime">12 gün 5 saat 23 dakika</span></p>
+                    <p><strong>Boot Sayısı:</strong> 47</p>
+                    <p><strong>Son Reset:</strong> Power-on Reset</p>
+                    <p><strong>Reset Nedeni:</strong> Güç kesintisi</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ağ Bilgileri -->
+        <div class="section">
+            <h2>🌐 Ağ Bağlantı Bilgileri</h2>
+            <div class="sensor-data">
+                <strong>WiFi Durumu:</strong> Bağlı ✅<br>
+                <strong>SSID:</strong> MyHomeNetwork<br>
+                <strong>IP Adresi:</strong> 192.168.1.105<br>
+                <strong>Alt Ağ Maskesi:</strong> 255.255.255.0<br>
+                <strong>Ağ Geçidi:</strong> 192.168.1.1<br>
+                <strong>DNS Sunucu:</strong> 8.8.8.8<br>
+                <strong>MAC Adresi:</strong> 24:6F:28:AB:CD:EF<br>
+                <strong>Sinyal Gücü:</strong> -45 dBm (Mükemmel)<br>
+                <strong>Kanal:</strong> 6<br>
+                <strong>Şifreleme:</strong> WPA2-PSK
+            </div>
+        </div>
+
+        <!-- Sensör Verileri -->
+        <div class="section">
+            <h2>🌡️ Sensör Verileri</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Sıcaklık ve Nem</h3>
+                    <p><strong>Sıcaklık:</strong> <span id="temperature">24.5°C</span></p>
+                    <p><strong>Nem:</strong> <span id="humidity">65%</span></p>
+                    <p><strong>Hissedilen:</strong> <span id="feels-like">26.2°C</span></p>
+                    <p><strong>Çiy Noktası:</strong> <span id="dew-point">17.8°C</span></p>
+                </div>
+                <div class="info-card">
+                    <h3>Basınç ve Hava Kalitesi</h3>
+                    <p><strong>Basınç:</strong> <span id="pressure">1013.25 hPa</span></p>
+                    <p><strong>Rakım:</strong> <span id="altitude">150 m</span></p>
+                    <p><strong>CO2:</strong> <span id="co2">420 ppm</span></p>
+                    <p><strong>VOC:</strong> <span id="voc">25 ppb</span></p>
+                </div>
+                <div class="info-card">
+                    <h3>Işık ve Hareket</h3>
+                    <p><strong>Işık Seviyesi:</strong> <span id="light">1250 lux</span></p>
+                    <p><strong>UV İndeksi:</strong> <span id="uv">3.2</span></p>
+                    <p><strong>Hareket:</strong> <span id="motion">Algılanmadı</span></p>
+                    <p><strong>Ses Seviyesi:</strong> <span id="sound">35 dB</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPIO Kontrolleri -->
+        <div class="section">
+            <h2>⚡ GPIO Kontrolleri</h2>
+            <h3>Dijital Çıkışlar</h3>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="led1"> LED 1 (GPIO 2)</label><br>
+                <label><input type="checkbox" id="led2"> LED 2 (GPIO 4)</label><br>
+                <label><input type="checkbox" id="led3"> LED 3 (GPIO 5)</label><br>
+                <label><input type="checkbox" id="relay1"> Röle 1 (GPIO 12)</label><br>
+                <label><input type="checkbox" id="relay2"> Röle 2 (GPIO 13)</label><br>
+                <label><input type="checkbox" id="buzzer"> Buzzer (GPIO 14)</label>
+            </div>
+
+            <h3>PWM Kontrolleri</h3>
+            <div class="input-group">
+                <label>LED Parlaklığı:</label>
+                <input type="range" class="slider" id="led-brightness" min="0" max="255" value="128">
+                <span id="led-brightness-value">128</span>
+            </div>
+            <div class="input-group">
+                <label>Motor Hızı:</label>
+                <input type="range" class="slider" id="motor-speed" min="0" max="100" value="50">
+                <span id="motor-speed-value">50%</span>
+            </div>
+            <div class="input-group">
+                <label>Servo Açısı:</label>
+                <input type="range" class="slider" id="servo-angle" min="0" max="180" value="90">
+                <span id="servo-angle-value">90°</span>
+            </div>
+
+            <h3>Dijital Girişler</h3>
+            <div class="sensor-data">
+                <strong>Buton 1 (GPIO 18):</strong> <span id="button1">Basılmadı</span><br>
+                <strong>Buton 2 (GPIO 19):</strong> <span id="button2">Basılmadı</span><br>
+                <strong>Switch 1 (GPIO 21):</strong> <span id="switch1">Kapalı</span><br>
+                <strong>Switch 2 (GPIO 22):</strong> <span id="switch2">Açık</span><br>
+                <strong>PIR Sensör (GPIO 23):</strong> <span id="pir">Hareket Yok</span>
+            </div>
+        </div>
+
+        <!-- Analog Okumalar -->
+        <div class="section">
+            <h2>📈 Analog Sensör Verileri</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pin</th>
+                        <th>Ham Değer</th>
+                        <th>Voltaj</th>
+                        <th>Açıklama</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ADC1_CH0 (GPIO 36)</td>
+                        <td>2048</td>
+                        <td>1.65V</td>
+                        <td>Potansiyometre</td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr>
+                        <td>ADC1_CH3 (GPIO 39)</td>
+                        <td>1024</td>
+                        <td>0.83V</td>
+                        <td>Işık Sensörü</td>
+                        <td>Karanlık</td>
+                    </tr>
+                    <tr>
+                        <td>ADC1_CH6 (GPIO 34)</td>
+                        <td>3072</td>
+                        <td>2.48V</td>
+                        <td>Sıcaklık Sensörü</td>
+                        <td>Sıcak</td>
+                    </tr>
+                    <tr>
+                        <td>ADC1_CH7 (GPIO 35)</td>
+                        <td>512</td>
+                        <td>0.41V</td>
+                        <td>Nem Sensörü</td>
+                        <td>Kuru</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sistem Kontrolleri -->
+        <div class="section">
+            <h2>🎛️ Sistem Kontrolleri</h2>
+            <button class="button" onclick="updateAllData()">Tüm Verileri Güncelle</button>
+            <button class="button" onclick="saveConfig()">Konfigürasyonu Kaydet</button>
+            <button class="button" onclick="loadConfig()">Konfigürasyonu Yükle</button>
+            <button class="button" onclick="exportData()">Verileri Dışa Aktar</button>
+            <br><br>
+            <button class="button success" onclick="testAllSensors()">Sensör Testi</button>
+            <button class="button" onclick="calibrateSensors()">Sensör Kalibrasyonu</button>
+            <button class="button" onclick="resetCounters()">Sayaçları Sıfırla</button>
+            <br><br>
+            <button class="button danger" onclick="factoryReset()">Fabrika Ayarlarına Dön</button>
+            <button class="button danger" onclick="rebootSystem()">Sistemi Yeniden Başlat</button>
+        </div>
+
+        <!-- WiFi Ayarları -->
+        <div class="section">
+            <h2>📶 WiFi Yapılandırması</h2>
+            <div class="input-group">
+                <label>SSID:</label>
+                <input type="text" id="wifi-ssid" value="MyHomeNetwork" style="width: 200px;">
+            </div>
+            <div class="input-group">
+                <label>Şifre:</label>
+                <input type="password" id="wifi-password" placeholder="WiFi şifresi" style="width: 200px;">
+            </div>
+            <div class="input-group">
+                <label>Güvenlik:</label>
+                <select id="wifi-security">
+                    <option value="open">Açık</option>
+                    <option value="wep">WEP</option>
+                    <option value="wpa" selected>WPA/WPA2</option>
+                    <option value="wpa3">WPA3</option>
+                </select>
+            </div>
+            <button class="button" onclick="connectWiFi()">WiFi'ye Bağlan</button>
+            <button class="button" onclick="scanNetworks()">Ağları Tara</button>
+            <button class="button danger" onclick="disconnectWiFi()">Bağlantıyı Kes</button>
+        </div>
+
+        <!-- Otomatik Görevler -->
+        <div class="section">
+            <h2>⏰ Otomatik Görevler ve Programlama</h2>
+            <h3>Zamanlayıcılar</h3>
+            <div class="input-group">
+                <label>LED Otomatik Açma:</label>
+                <input type="time" id="led-on-time" value="19:00">
+                <label style="width: auto; margin-left: 20px;">LED Otomatik Kapama:</label>
+                <input type="time" id="led-off-time" value="23:00">
+            </div>
+            <div class="input-group">
+                <label>Sulama Zamanı:</label>
+                <input type="time" id="water-time" value="06:00">
+                <label style="width: auto; margin-left: 20px;">Süre (dakika):</label>
+                <input type="number" id="water-duration" value="15" min="1" max="60">
+            </div>
+
+            <h3>Sensör Eşikleri</h3>
+            <div class="input-group">
+                <label>Max Sıcaklık:</label>
+                <input type="number" id="temp-max" value="30" step="0.1"> °C
+            </div>
+            <div class="input-group">
+                <label>Min Nem:</label>
+                <input type="number" id="humidity-min" value="40"> %
+            </div>
+            <div class="input-group">
+                <label>Işık Eşiği:</label>
+                <input type="number" id="light-threshold" value="500"> lux
+            </div>
+
+            <button class="button" onclick="saveSchedule()">Programı Kaydet</button>
+            <button class="button" onclick="enableSchedule()">Programı Etkinleştir</button>
+            <button class="button danger" onclick="disableSchedule()">Programı Devre Dışı Bırak</button>
+        </div>
+
+        <!-- Sistem Logları -->
+        <div class="section">
+            <h2>📝 Sistem Logları</h2>
+            <div class="log-area" id="system-logs">
+[2025-06-20 14:25:33] INFO: Sistem başlatıldı
+[2025-06-20 14:25:34] INFO: WiFi bağlantısı kuruldu (MyHomeNetwork)
+[2025-06-20 14:25:35] INFO: HTTP server başlatıldı (Port: 80)
+[2025-06-20 14:25:36] INFO: DHT22 sensörü başlatıldı
+[2025-06-20 14:25:37] INFO: BMP280 sensörü başlatıldı
+[2025-06-20 14:25:38] INFO: PIR sensörü etkinleştirildi
+[2025-06-20 14:26:15] INFO: Sıcaklık okuması: 24.5°C
+[2025-06-20 14:26:15] INFO: Nem okuması: 65%
+[2025-06-20 14:26:45] WARN: Sıcaklık eşiği aşıldı (25.2°C > 25.0°C)
+[2025-06-20 14:27:12] INFO: LED1 açıldı (Manuel)
+[2025-06-20 14:27:33] INFO: Hareket algılandı (PIR)
+[2025-06-20 14:28:01] INFO: GPIO durumu güncellendi
+[2025-06-20 14:28:15] INFO: Konfigürasyon kaydedildi
+[2025-06-20 14:28:45] ERROR: ADC okuma hatası (GPIO 34)
+[2025-06-20 14:29:01] INFO: ADC hatası düzeltildi
+[2025-06-20 14:29:30] INFO: Otomatik sulama başlatıldı
+[2025-06-20 14:44:30] INFO: Otomatik sulama tamamlandı
+[2025-06-20 14:45:15] INFO: Veri dışa aktarıldı (CSV format)
+            </div>
+            <br>
+            <button class="button" onclick="clearLogs()">Logları Temizle</button>
+            <button class="button" onclick="downloadLogs()">Logları İndir</button>
+            <button class="button" onclick="refreshLogs()">Logları Yenile</button>
+        </div>
+
+        <!-- İstatistikler -->
+        <div class="section">
+            <h2>📊 İstatistikler ve Performans</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Bellek Kullanımı</h3>
+                    <p><strong>Toplam Heap:</strong> 327680 bytes</p>
+                    <p><strong>Kullanılan Heap:</strong> 156432 bytes</p>
+                    <p><strong>Serbest Heap:</strong> 171248 bytes</p>
+                    <p><strong>En Düşük Serbest:</strong> 145632 bytes</p>
+                </div>
+                <div class="info-card">
+                    <h3>Ağ İstatistikleri</h3>
+                    <p><strong>Gönderilen Paket:</strong> 15847</p>
+                    <p><strong>Alınan Paket:</strong> 12356</p>
+                    <p><strong>Kayıp Paket:</strong> 23</p>
+                    <p><strong>Ortalama Ping:</strong> 15ms</p>
+                </div>
+                <div class="info-card">
+                    <h3>Sensör İstatistikleri</h3>
+                    <p><strong>Toplam Okuma:</strong> 8945</p>
+                    <p><strong>Başarılı Okuma:</strong> 8912</p>
+                    <p><strong>Hatalı Okuma:</strong> 33</p>
+                    <p><strong>Başarı Oranı:</strong> 99.6%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hakkında -->
+        <div class="section">
+            <h2>ℹ️ Hakkında</h2>
+            <p>Bu ESP32 IoT kontrol paneli, ev otomasyonu ve sensör verilerinin izlenmesi için tasarlanmıştır. 
+            ESP-IDF framework'ü kullanılarak geliştirilmiş olup, HTTP server üzerinden web arayüzü sunmaktadır.</p>
+            
+            <p><strong>Özellikler:</strong></p>
+            <ul>
+                <li>Gerçek zamanlı sensör veri izleme</li>
+                <li>GPIO pin kontrolü (dijital ve PWM)</li>
+                <li>WiFi ağ yönetimi</li>
+                <li>Otomatik görev programlama</li>
+                <li>Sistem log kayıtları</li>
+                <li>Konfigürasyon yönetimi</li>
+                <li>Gzip sıkıştırma desteği</li>
+                <li>Responsive tasarım</li>
+            </ul>
+
+            <p><strong>Desteklenen Sensörler:</strong> DHT22, BMP280, PIR, ADC, Potansiyometre, LDR</p>
+            <p><strong>Geliştirici:</strong> ESP32 IoT Team</p>
+            <p><strong>Lisans:</strong> MIT License</p>
+            <p><strong>Kaynak Kodu:</strong> <a href="https://github.com/esp32-iot/webserver">GitHub</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Temel JavaScript fonksiyonları
+        function updateAllData() {
+            console.log('Tüm veriler güncelleniyor...');
+            document.getElementById('last-update').textContent = new Date().toLocaleString('tr-TR');
+        }
+
+        function saveConfig() {
+            alert('Konfigürasyon kaydedildi!');
+        }
+
+        function loadConfig() {
+            alert('Konfigürasyon yüklendi!');
+        }
+
+        function exportData() {
+            alert('Veriler CSV formatında dışa aktarıldı!');
+        }
+
+        function testAllSensors() {
+            alert('Tüm sensörler test ediliyor...');
+        }
+
+        function calibrateSensors() {
+            alert('Sensör kalibrasyonu başlatıldı...');
+        }
+
+        function resetCounters() {
+            if(confirm('Tüm sayaçlar sıfırlanacak. Emin misiniz?')) {
+                alert('Sayaçlar sıfırlandı!');
+            }
+        }
+
+        function factoryReset() {
+            if(confirm('Tüm ayarlar silinecek ve cihaz fabrika ayarlarına dönecek. Emin misiniz?')) {
+                alert('Fabrika ayarlarına dönülüyor...');
+            }
+        }
+
+        function rebootSystem() {
+            if(confirm('Sistem yeniden başlatılacak. Emin misiniz?')) {
+                alert('Sistem yeniden başlatılıyor...');
+            }
+        }
+
+        function connectWiFi() {
+            const ssid = document.getElementById('wifi-ssid').value;
+            alert('WiFi ağına bağlanılıyor: ' + ssid);
+        }
+
+        function scanNetworks() {
+            alert('WiFi ağları taranıyor...');
+        }
+
+        function disconnectWiFi() {
+            alert('WiFi bağlantısı kesiliyor...');
+        }
+
+        function saveSchedule() {
+            alert('Otomatik görev programı kaydedildi!');
+        }
+
+        function enableSchedule() {
+            alert('Otomatik görev programı etkinleştirildi!');
+        }
+
+        function disableSchedule() {
+            alert('Otomatik görev programı devre dışı bırakıldı!');
+        }
+
+        function clearLogs() {
+            if(confirm('Tüm log kayıtları silinecek. Emin misiniz?')) {
+                document.getElementById('system-logs').innerHTML = '[Loglar temizlendi]';
+            }
+        }
+
+        function downloadLogs() {
+            alert('Log dosyası indiriliyor...');
+        }
+
+        function refreshLogs() {
+            alert('Loglar yenileniyor...');
+        }
+
+        // Slider değerlerini güncelle
+        document.getElementById('led-brightness').addEventListener('input', function() {
+            document.getElementById('led-brightness-value').textContent = this.value;
+        });
+
+        document.getElementById('motor-speed').addEventListener('input', function() {
+            document.getElementById('motor-speed-value').textContent = this.value + '%';
+        });
+
+        document.getElementById('servo-angle').addEventListener('input', function() {
+            document.getElementById('servo-angle-value').textContent = this.value + '°';
+        });
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAllData();
+            console.log('ESP32 IoT Kontrol Paneli yüklendi');
+        });
+
+        // Her 5 saniyede bir veri güncelle
+        setInterval(function() {
+            // Buraya gerçek sensör verilerini çekme kodları gelecek
+            console.log('Veriler otomatik güncellendi');
+        }, 5000);
+    </script>
+</body>
+</html>

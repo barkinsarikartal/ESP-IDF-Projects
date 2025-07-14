@@ -1,0 +1,1 @@
+# Do not forget to set Flash Size to 2MB and Partition Table to Custom partition table CSV from menuconfig.
