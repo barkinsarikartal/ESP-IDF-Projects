@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dosya Yükleyici</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .upload-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background-color: #007acc;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005ea6;
+        }
+
+        progress {
+            width: 100%;
+            height: 20px;
+            margin-top: 20px;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>TXT Dosyası Yükleyici</h1>
+    <div class="upload-container">
+        <input type="file" id="fileInput" accept=".txt"><br>
+        <button onclick="uploadFile()">Yükle</button>
+        <progress id="progressBar" value="0" max="100"></progress>
+        <p id="status">Durum: Bekleniyor...</p>
+    </div>
+
+    <script>
+        let socket = new WebSocket("ws://" + location.host + "/ws");
+
+        socket.onopen = function() {
+            console.log("WebSocket bağlantısı kuruldu.");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket hatası:", error);
+        };
+
+        socket.onclose = function() {
+            console.warn("WebSocket bağlantısı kapatıldı.");
+        };
+
+        socket.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.received !== undefined && data.total !== undefined) {
+                    const percent = (data.received / data.total) * 100;
+                    console.log("received: " + data.received + ", total: " + data.total);
+                    document.getElementById('progressBar').value = percent;
+                    document.getElementById('status').textContent = `%${percent.toFixed(1)} yüklendi`;
+                }
+            } catch (e) {
+                console.error("WebSocket mesajı geçersiz:", e);
+            }
+        };
+
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Lütfen bir dosya seçin.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("txtfile", file);
+
+            document.getElementById("status").textContent = "Yükleniyor...";
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById("status").textContent = "Yükleme tamamlandı.";
+                } else {
+                    document.getElementById("status").textContent = "Yükleme başarısız oldu.";
+                }
+            }).catch(error => {
+                document.getElementById("status").textContent = "Hata oluştu: " + error;
+            });
+        }
+    </script>
+</body>
+</html>

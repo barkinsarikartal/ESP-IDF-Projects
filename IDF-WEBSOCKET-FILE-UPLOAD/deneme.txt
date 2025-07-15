@@ -1,0 +1,60 @@
+Microcontroller units (MCUs) and microprocessor units (MPUs) are two kinds of integrated circuits that, while similar in certain ways, are very different in many others. Replacing antiquated multi-component central processing units (CPUs) with separate logic units, these single-chip processors are both extremely valuable in the continued development of computing technology. However, microcontrollers and microprocessors differ significantly in component structure, chip architecture, performance capabilities and application.
+
+The key difference between these two units is that microcontrollers combine all the necessary elements of a microcomputer system onto a single piece of hardware. Microcontrollers do not require additional peripherals or complex operating systems to function, while microprocessors do. Both circuits contain CPUs, however, microcontrollers also integrate memory, input/output (I/O) components and other varied peripherals.
+
+Cost-effective and small-in-size, low-power microcontrollers are optimized for all-in-one functionality. As a result, these units are best used for specific applications like automotive infotainment systems and Internet-of-Things (IoT) devices.
+
+Conversely, general-purpose microprocessors are typically more powerful and are designed to be supported by specialized hardware for increased performance in demanding applications like personal computing and graphics processing.
+
+On a hardware level, microprocessors are based on the “classical” von Neumann architecture. This consists of a CPU with both an arithmetic logic unit (ALU) and processor registers (small amounts of fast memory storage for quick data access), a control unit, memory for data and instructions, external memory for mass storage, and I/O mechanisms. This methodology uses the same set of interconnecting wires (known as a bus) to both transmit instructions and perform operations. Microprocessors cannot perform these actions simultaneously, yet modern devices use various mitigation techniques to avoid data bottlenecks.
+
+On the other hand, microcontrollers use the more complex Harvard architecture, which has one dedicated set of data buses and address buses for reading and writing data to memory, and another set to fetch instructions for performing operations. Since the CPU can both read an instruction and access data memory at the same time, the Harvard architecture can perform basic operations faster.
+
+The Harvard architecture excels at real-time and high-speed computing tasks. However, the unified data and instructions memory space of the simplified von Neumann architecture results in improved reliability and scalability. For this reason, von Neumann-based microprocessors are favored for more demanding tasks such as high-performance computing (HPC) and gaming, while microcontrollers are typically used to handle fast signal processing.
+
+Understanding microcontrollers
+Essentially, a microcontroller is a small computer on a single chip, containing a processor core (or cores), operational memory (RAM) and electrically erasable programmable read-only memory (EEPROM) for program memory. Optimized to function as standalone units, microcontroller integrations improve real-time signal processing and make these compact units ideal for controlling specific tasks or duties within embedded systems.
+
+Key components of a microcontroller
+Central processing unit (CPU): Colloquially referred to as the computer’s “brain,” the CPU is responsible for executing instructions and controlling operations.
+Memory: Microcontrollers contain both volatile memory (RAM), which stores temporary data that may be lost if the system loses power, and non-volatile flash memory (ROM) for storing the microcontroller’s programming code.
+Peripherals: Depending on the intended application, a microcontroller may contain various peripheral components, such as I/O interfaces, timers, counters, analog-to-digital converters (ADCs) and communication protocols (UART, SPI, I2C).
+Lightweight, small and requiring comparatively low power, microcontrollers are ideal for battery-operated electronic devices like smartphones, smartwatches and other wearables. They are also a favorite among hobbyists. Consumer-grade programmable microcontrollers, such as those made by Arduino or the Raspberry Pi, can be easily configured in programming languages like C, C++ and Python, commonly used across Windows, Linux and MacOS operating systems. While accessible to even beginner developers, microcontrollers are also frequently applied in a wide range of professional and industrial use cases, including industrial automation, transportation safety systems and prototyping.
+
+Microcontroller types and use-cases 
+Responding to a custom chip request from a Japanese calculator manufacturer, Texas Instruments engineers Gary Boone and Michael Cochran are credited with creating the first microcontroller in 1971. A breakthrough in circuitry technology, the following years have produced myriad improvements and iterations from manufacturers like Intel, NXP and Arm.
+
+The following are some of the more common types of microcontrollers:
+
+8-bit microcontrollers: The most basic type of microcontroller features limited processing and memory and typically used in small appliances, such as toys and remote controls.
+16-bit microcontrollers: Twice as capable as 8-bit models, 16-bit microcontrollers are used for more complex applications, including medical devices, automotive systems and industrial control systems.
+32-bit microcontrollers: The most powerful and feature-rich type of microcontrollers, these are used for demanding applications, such as gaming consoles, entertainment devices and high-end industrial automation.
+Reduced instruction set computer (RISC) microcontrollers: RISC microcontrollers incorporate a design architecture that simplifies and improves operations by executing fewer compute instructions faster than other methodologies, such as the complex instruction set computer (CISC) architecture.
+ARM microcontrollers: Formerly an acronym for Advanced RISC Machines, these types of microcontrollers incorporate the ARM architecture, including the modern Arm Cortex subset, that bolster performance and reliability. Arm microcontrollers are widely used in mobile devices, automotive systems and industrial control systems.
+PIC Microcontrollers: Developed by Microchip Technology, the PIC Microcontroller is the world’s smallest microcontroller, and it is found frequently in robotics, home and industrial automation and renewable energy systems.
+FPGA-based microcontrollers: Commonly used in applications necessitating digital signal processing, video processing and high-speed networking, these microcontrollers use customizable chips called field-programmable gate arrays (FPGAs), which can be configured and reconfigured on the hardware level to create unique hardware solutions for demanding processing requirements.
+Understanding microprocessors
+Microprocessors are the predominant type of computer processor, integrating all the required components of a CPU into a single circuit. MPUs combine the arithmetic, logic and control units of antiquated CPU computer systems into a single multipurpose, clock-driven and register-based piece of hardware. This integrated design improves reliability by reducing potential points of failure. While microprocessors do not contain on-chip program memory, they are optimized for demanding general-purpose use and designed to support and be supported by specialized computer peripherals.
+
+Key components of a microprocessor
+Modern microprocessors combine millions of small transistors, resistors and diodes assembled on a semiconductor material to create the key components of a CPU. 
+
+Arithmetic logic unit (ALU): The main logic unit of the CPU, this component executes logical operations including mathematical calculations and data comparisons. 
+Control unit (CU): The CU circuit interprets instructions and initiates their execution, directing the basic operations of the processor. 
+Registers: Small, fast memory storage used by a CPU to temporarily hold data and instructions during computational processes. 
+Cache memory: Microprocessors and CPUs use cache memory, a high-speed form of memory located close to the CPU, to store frequently accessed data to accelerate performance. 
+Processor cores: Individual processing units within microprocessors are known as cores. Modern processors frequently incorporate multiple cores (dual-core, quad-core) allowing for parallel processing by enabling the performance of multiple tasks simultaneously.   
+I/O modules: A microprocessor’s I/O components are critical for managing the flow of data to and from the CPU, including any additional computer peripherals including networking peripherals such as ethernet ports or WiFi units.
+Microprocessor types and use-cases 
+Versatile microprocessors can be found in a wide variety of applications, while specialized units are commonly employed for specific tasks requiring high-power processing. Ranging in power, performance, size, energy consumption and many other aspects, the following are some of the main types of microprocessors:
+
+General-purpose microprocessors: These versatile microprocessors are found in a wide range of common applications and devices, such as laptops and servers.
+Digital signal processors (DSPs): DSPs are specialized for high-speed numeric calculations and are often used for demanding tasks like audio processing, telecommunications and image processing. They may also be found in applications requiring the interpretation of analog to digital signals, such as weather sensors. DSPs are commonly used in military applications like surveillance drones and other autonomous aircraft.
+Application-specific integrated circuits (ASICs): ASIC microprocessors are designed for specific tasks and are customized to meet the specific demands of various applications. Some examples of ASIC microprocessors include custom chips for game consoles or cryptocurrency mining. DSPs, GPUs and other types of specialized microprocessors are technically ASICs, as well.
+Graphics processing units (GPUs): GPU microprocessors are specially designed for the demanding task of rendering digital video and graphics requiring high-powered performance and parallel processing. Critically important for high-end gaming, powerful GPU microprocessors are also commonly used in cryptocurrency mining and are known for high power consumption.
+Network processors: A type of ASIC microprocessor specifically optimized for processing network data packets most frequently used in telecom switches, routers and network security devices.
+Coprocessors: Coprocessors, such as floating-point units (FPUs), are designed to provide auxiliary support for a system’s main CPU to boost performance during certain demanding tasks such as carrying out advanced scientific calculations or complicated mathematical formulas.
+Choosing between a microcontroller and microprocessor
+Microcontrollers and microprocessors are capable of performing some of the same tasks. However, depending on application requirements, each has their own unique strengths and weaknesses. The integrated features of a microcontroller, including power-saving modes for low power consumption, make it ideal for most embedded systems.
+
+However, in circumstances requiring complex computations or higher processing power, microprocessors are a better choice, but the added performance and flexibility come at the cost of higher power consumption, and a higher price tag. These features make microprocessors a go-to for personal computers and industrial supercomputers.
